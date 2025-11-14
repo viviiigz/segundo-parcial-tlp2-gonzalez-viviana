@@ -1,7 +1,13 @@
+import { Loading } from "../components/Loading";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import { useForm } from "../hooks/useForm";
+
 export const HomePage = () => {
   // TODO: Integrar lógica para obtener superhéroes desde la API
   // TODO: Implementar useState para almacenar la lista de superhéroes
   // TODO: Implementar función para recargar superhéroes
+
 
   // Datos de ejemplo para las cards
   const superheroes = [
@@ -51,9 +57,7 @@ export const HomePage = () => {
 
       <div className="flex justify-center mb-8">
         <button
-          onClick={() => {
-            // TODO: Implementar función para recargar superhéroes
-          }}
+          onClick={handleSubmit}
           className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded transition-colors"
         >
           Recargar
