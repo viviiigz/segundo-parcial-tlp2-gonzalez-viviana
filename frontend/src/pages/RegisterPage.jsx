@@ -1,11 +1,13 @@
 import { useNavigate, Link } from "react-router";
 import { useForm } from "../hooks/useForm";
+import { useState } from "react";
+import { Loading } from "../components/Loading";
 
 export const RegisterPage = () => {
   // TODO: Integrar lógica de registro aquí
   // TODO: Implementar useForm para el manejo del formulario
   // TODO: Implementar función handleSubmit
-   const { formState, handleChange } = useForm({
+ const { formState, handleChange } = useForm({
     name: "",
     lastname: "",
     username: "",
@@ -13,34 +15,42 @@ export const RegisterPage = () => {
     password: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const handleSubmit = async (evento) => {
-    try {
-      evento.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    setError(null);
 
+    try {
       const response = await fetch("http://localhost:3000/api/register", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formState),
+        credentials: "include", 
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        return alert(data.message);
+        // Si hay errores de validación, los muestro o muestro el mensaje general
+        const mensaje = data.errors ? "Revisa los campos" : data.message;
+        throw new Error(mensaje);
       }
 
-      alert("¡Usuario registrado exitosamente!.");
-      navigate("/home");
-
-    } catch (error) {
-      throw new Error(error);
+      alert("¡Cuenta creada! Ahora inicia sesión.");
+      navigate("/login");
+      
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
+  if (loading) return <Loading />;
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">
       <div className="max-w-lg w-full bg-white rounded-lg shadow-xl p-8">

@@ -1,4 +1,4 @@
-import { useNavigate, Link } from "react-router";
+ import { useNavigate, Link } from "react-router";
 import { useForm } from "../hooks/useForm";
 import { Loading } from "../components/Loading";
 import { useState } from "react";
@@ -8,36 +8,46 @@ import { useState } from "react";
 // TODO: Implementar función handleSubmit
 
 export const LoginPage = () => {
- const { formState, handleChange } = useForm({
+
+  const { formState, handleChange } = useForm({
     username: "",
     password: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true);
+    setError(null);
 
-    const peticion = await fetch("http://localhost:3000/api/login", {
-      method: "POST",
-      body: JSON.stringify(formState),
-      headers: {
-        "Content-type": "application/json",
-      },
-    });
+    try {
+      const response = await fetch("http://localhost:3000/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formState),
+        credentials: "include", // ¡Esto es OBLIGATORIO para que funcione la cookie! [cite: 124]
+      });
 
-    const data = await peticion.json();
+      const data = await response.json();
 
-    if (!peticion.ok) {
-      return alert(data.message);
+      if (!response.ok) {
+        throw new Error(data.message || "Error al entrar");
+      }
+
+      // Si todo sale bien, vamos al home
+      navigate("/home");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-
-    localStorage.setItem("token", data.token);
-    alert(data.message);
-
-    navigate("/home");
   };
 
+  // Si está cargando mostramos el componente que nos dieron
+  if (loading) return <Loading />;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">

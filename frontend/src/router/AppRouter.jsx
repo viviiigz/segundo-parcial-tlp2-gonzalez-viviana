@@ -7,20 +7,20 @@ import { HomePage } from "../pages/HomePage";
 
 export const AppRouter = () => {
   return (
-    <BrowserRouter>
+<BrowserRouter>
       <Routes>
-        {/* Rutas públicas */}
+        {/* Rutas Públicas (Login/Register) */}
         <Route element={<PublicRoute />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
         </Route>
 
-        {/* Rutas privadas */}
+        {/* Rutas Privadas (Home y todo lo interno) */}
         <Route element={<PrivateRoute />}>
           <Route path="/home" element={<HomePage />} />
         </Route>
 
-        {/* Ruta catch-all - redirige a login */}
+        {/* Si ponen cualquier fruta, mandar al login */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
